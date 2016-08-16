@@ -2,7 +2,10 @@
 var gulp = require('gulp'),
     jshint = require('gulp-jshint'),
     sass = require('gulp-sass'),
-    sourcemaps = require('gulp-sourcemaps');
+    sourcemaps = require('gulp-sourcemaps'),
+    gutil = require('gulp-util'),
+    uglify = require('gulp-uglify'),
+    concat = require('gulp-concat');
 
 // define the default task and add the watch task to it
 gulp.task('default', ['watch']);
@@ -19,6 +22,16 @@ gulp.task('build-css', function() {
         .pipe(sass())
         .pipe(sourcemaps.write())
         .pipe(gulp.dest('public/assets/stylesheets'));
+});
+
+gulp.task('build-js', function() {
+    return gulp.src('source/javascript/**/*.js')
+        .pipe(sourcemaps.init())
+        .pipe(concat('bundle.js'))
+        // only uglify is gulp is ran with '--type production'
+        .pipe(gutil.env.type === 'production' ? uglify() : gutil.noop())
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest('public/assets/javascript'));
 });
 
 // configure which files to watch and what tasks to use on file changes
